@@ -94,7 +94,7 @@ async def read_all_posts(db: AsyncSession = Depends(get_async_db)):
         404: {"description": "NOT FOUND - Post ID not found"}
     }
 )
-async def update(request: PostModel, db: AsyncSession = Depends(get_async_db), id: int):
+async def update(id: int, request: PostModel, db: AsyncSession = Depends(get_async_db)):
     post = await db_post.update(request, db, id)
     return post
 
@@ -123,7 +123,7 @@ async def update(request: PostModel, db: AsyncSession = Depends(get_async_db), i
         }
     }
 )
-async def patch(request: PostPatchModel, db: AsyncSession = Depends(get_async_db), id: int):
+async def patch(id: int, request: PostPatchModel, db: AsyncSession = Depends(get_async_db)):
     post = await db_post.patch(request, db, id)
     return post
 
@@ -153,6 +153,6 @@ async def patch(request: PostPatchModel, db: AsyncSession = Depends(get_async_db
         }
     }
 )
-async def delete(db: AsyncSession = Depends(get_async_db), id: int):
+async def delete(id: int, db: AsyncSession = Depends(get_async_db)):
     await db_post.delete(db, id)
     return None
