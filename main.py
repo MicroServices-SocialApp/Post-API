@@ -2,13 +2,13 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError, OperationalError
 from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, Request, status
 from fastapi.responses import JSONResponse
-from router import abc
+from router import post
 import logging
 
 # -----------------------------------------------------------------------------------------------
 
 app = FastAPI()
-app.include_router(abc.router)
+app.include_router(post.router)
 
 # -----------------------------------------------------------------------------------------------
 

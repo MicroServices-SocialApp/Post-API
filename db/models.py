@@ -5,26 +5,22 @@ from db.database import Base
 
 
 
-class DbAbc(Base):
-    __tablename__: str = "user"
+class DbPost(Base):
+    __tablename__: str = "post"
     id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
         index=True,
-        comment="Unique identifier for the user (Auto-incrementing PK).",
+        comment="Unique identifier for the post (Auto-incrementing PK).",
     )
-    abc: Mapped[str] = mapped_column(
-        String(40),
+    text: Mapped[str] = mapped_column(
+        String(256),
         unique=True,
         nullable=False,
-        comment="Unique display name. Used for public profile URLs and mentions.",
-    )
-    hashed_password: Mapped[str] = mapped_column(
-        String,
-        comment="Werkzeug hash (scrypt:32768:8:1). Use check_password_hash to verify.",
+        comment="The post's text.",
     )
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
-        comment="Timestamp of when the account was created.",
+        comment="Timestamp of when the post was created.",
     )
