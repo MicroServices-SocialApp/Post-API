@@ -44,7 +44,7 @@ async def update(request: PostModel, db: AsyncSession, id: int):
         sql_update(DbPost)
         .where(DbPost.id == id)
         .values(
-            username=request.text,
+            text=request.text,
         )
         .returning(DbPost)
     )
