@@ -19,6 +19,12 @@ class DbPost(Base):
         nullable=False,
         comment="The post's text.",
     )
+    user_id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=False,
+        index=True,
+        comment="Unique identifier for the post owner.",
+    )
     timestamp: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

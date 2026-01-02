@@ -23,6 +23,6 @@ fi
 
 # Generate the new migration
 echo \n"Going to revision."\n
-alembic revision --autogenerate -m "First migration"
+alembic revision --autogenerate -m "added column user_id"
 
 echo -e \n"Database revision complete."\n
