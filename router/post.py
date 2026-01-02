@@ -1,5 +1,6 @@
 from typing import List
 from fastapi import APIRouter, Depends, status
+from auth.oauth2 import get_current_user
 from db import db_post
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from db.database import get_async_db
@@ -23,10 +24,7 @@ router = APIRouter(prefix="/post", tags=["post"])
             "description": "SUCCESS - Post has been created",
             "content": {
                 "application/json": {
-                    "example": {
-                        "id": 1,
-                        "text": "this is a cool post."
-                    }
+                    "example": {"id": 1, "text": "this is a cool post."}
                 }
             }
         },
@@ -35,8 +33,8 @@ router = APIRouter(prefix="/post", tags=["post"])
         }
     }
 )
-async def create(request: PostModel, db: AsyncSession = Depends(get_async_db)):
-    post = await db_post.create(request, db)
+async def create(request: PostModel, db: AsyncSession = Depends(get_async_db), current_user_id: int = Depends(get_current_user)):
+    post = await db_post.create(request, db, current_user_id)
     return post
 
 
@@ -87,15 +85,15 @@ async def read_all_posts(db: AsyncSession = Depends(get_async_db)):
             "description": "SUCCESS - Post information overwritten",
             "content": {
                 "application/json": {
-                    "example": {"id": 1, "username": "This is a NEW cool text under a post."}
+                    "example": {"id": 1, "text": "This is a NEW cool text under a post."}
                 }
             }
         },
         404: {"description": "NOT FOUND - Post ID not found"}
     }
 )
-async def update(id: int, request: PostModel, db: AsyncSession = Depends(get_async_db)):
-    post = await db_post.update(request, db, id)
+async def update(post_id: int, request: PostModel, db: AsyncSession = Depends(get_async_db), current_user_id: int = Depends(get_current_user)):
+    post = await db_post.update(post_id, request, db, current_user_id)
     return post
 
 
@@ -117,14 +115,14 @@ async def update(id: int, request: PostModel, db: AsyncSession = Depends(get_asy
             "description": "SUCCESS - Post fields updated",
             "content": {
                 "application/json": {
-                    "example": {"detail": "Post has been successfully patched in the database."}
+                    "example": {"id": 1, "text": "This is a NEW NOT cool text under a post."}
                 }
             }
         }
     }
 )
-async def patch(id: int, request: PostPatchModel, db: AsyncSession = Depends(get_async_db)):
-    post = await db_post.patch(request, db, id)
+async def patch(post_id: int, request: PostPatchModel, db: AsyncSession = Depends(get_async_db), current_user_id: int = Depends(get_current_user)):
+    post = await db_post.patch(post_id, request, db, current_user_id)
     return post
 
 #--------------------------------------------------------------------------
@@ -153,6 +151,6 @@ async def patch(id: int, request: PostPatchModel, db: AsyncSession = Depends(get
         }
     }
 )
-async def delete(id: int, db: AsyncSession = Depends(get_async_db)):
-    await db_post.delete(db, id)
+async def delete(post_id: int, db: AsyncSession = Depends(get_async_db), current_user_id: int = Depends(get_current_user)):
+    await db_post.delete(post_id, db, current_user_id)
     return None

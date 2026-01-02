@@ -3,12 +3,12 @@ from sqlalchemy import select, update as sql_update, delete as sql_delete
 from schemas.schemas_post import PostModel, PostPatchModel
 from sqlalchemy.ext.asyncio.session import AsyncSession
 from db.models import DbPost
-# import asyncio
 
-async def create(request: PostModel, db: AsyncSession):
+async def create(request: PostModel, db: AsyncSession, current_user_id: int):
     
     new_post = DbPost(
         text=request.text,
+        user_id=current_user_id
     )
     db.add(new_post)
     await db.commit()
@@ -18,9 +18,9 @@ async def create(request: PostModel, db: AsyncSession):
 # --------------------------------------------------------------------------
 
 
-async def read_post_by_id(db: AsyncSession, id: int):
+async def read_post_by_id(post_id: int, db: AsyncSession):
 
-    query = select(DbPost).where(DbPost.id == id)
+    query = select(DbPost).where(DbPost.id == post_id)
     result = await db.execute(query)
     post = result.scalar_one_or_none()
     return post
@@ -38,11 +38,11 @@ async def read_all_posts(db: AsyncSession):
 
 # --------------------------------------------------------------------------
 
-async def update(request: PostModel, db: AsyncSession, id: int):
+async def update(post_id: int, request: PostModel, db: AsyncSession, current_user_id: int):
 
     query = (
         sql_update(DbPost)
-        .where(DbPost.id == id)
+        .where(DbPost.id == post_id, DbPost.user_id == current_user_id)
         .values(
             text=request.text,
         )
@@ -58,7 +58,7 @@ async def update(request: PostModel, db: AsyncSession, id: int):
 
 # --------------------------------------------------------------------------
 
-async def patch(request: PostPatchModel, db: AsyncSession, id: int):
+async def patch(post_id: int, request: PostPatchModel, db: AsyncSession, current_user_id: int):
     # Convert request to a dictionary, keeping only the fields the user actually sent
     update_data = request.model_dump(exclude_unset=True)
 
@@ -68,7 +68,7 @@ async def patch(request: PostPatchModel, db: AsyncSession, id: int):
     # Execute the update
     query = (
         sql_update(DbPost)
-        .where(DbPost.id == id)
+        .where(DbPost.id == post_id, DbPost.user_id == current_user_id)
         .values(**update_data)  # Unpack the dict into the update query
         .returning(DbPost)
     )
@@ -79,8 +79,8 @@ async def patch(request: PostPatchModel, db: AsyncSession, id: int):
 
 # --------------------------------------------------------------------------
 
-async def delete(db: AsyncSession, id: int):
-    query = sql_delete(DbPost).where(DbPost.id == id)
+async def delete(post_id: int, db: AsyncSession, current_user_id: int):
+    query = sql_delete(DbPost).where(DbPost.id == post_id, DbPost.user_id == current_user_id)
     await db.execute(query)
     await db.commit()
     return None
