@@ -15,7 +15,7 @@ fi
 
 # Initialize Alembic directory if it doesn't exist
 if [ ! -f "alembic.ini" ]; then
-    echo "Alembic not initialized. Running 'alembic init'..."
+    echo "Alembic not initialized. Running 'alembic init --template async alembic'..."
     alembic init --template async alembic
     echo "WARNING: Alembic initialized. You must now configure 'alembic/env.py' to load your DATABASE_URL and Models."
     exit 0 # Exit here so you can configure the file before running migrations
