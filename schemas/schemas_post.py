@@ -1,5 +1,5 @@
-from typing import Optional
-from pydantic import BaseModel, Field
+from typing import List, Optional
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PostModel(BaseModel):
@@ -21,11 +21,33 @@ class PostPatchModel(BaseModel):
         # min_length=2,
         max_length=256,
     )
+
+
 #--------------------------------------------------------------------------
+
 
 class PostDisplay(BaseModel):
     id: int
     text: str
+    user_id: int
     
-    class ConfigDict:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+#------------------------------
+
+
+class ReadAllPost(BaseModel):
+    id: int
+    text: str
+    user_id: int
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class PaginatedPostDisplay(BaseModel):
+    items: List[ReadAllPost]
+    next_cursor: Optional[int]
+    has_more: bool
+
+    model_config = ConfigDict(from_attributes=True)
