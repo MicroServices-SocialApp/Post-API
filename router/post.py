@@ -10,7 +10,7 @@ from auth.oauth2 import get_current_user
 from db.database import get_async_db
 from db import db_post
 
-router = APIRouter(prefix="/post", tags=["post"])
+router = APIRouter(tags=["post"])
 
 
 @router.post(
