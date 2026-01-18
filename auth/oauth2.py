@@ -11,8 +11,7 @@ ALGORITHM = os.getenv("ALGORITHM")
 
 # 2. Define the scheme
 # This tells Swagger UI where to find the token (the URL of your auth service)
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8004/login")
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost/auth/login")
 
 # 3. The Dependency
 async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_async_db)) -> int:
@@ -38,6 +37,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: AsyncSession
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Did not find the user id in the payload",
         )
+    
     try:
         return int(user_id)
     except ValueError as e:
