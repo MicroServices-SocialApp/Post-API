@@ -5,12 +5,34 @@ from schemas.schemas_post import (
     PostDisplay,
 )
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, HTTPException, Depends, status
 from auth.oauth2 import get_current_user
 from db.database import get_async_db
+from sqlalchemy import text
 from db import db_post
 
 router = APIRouter(tags=["post"])
+
+
+# --------------------------------------------------------------------------
+
+
+@router.get("/health", tags=["system"])
+async def health_check(db: AsyncSession = Depends(get_async_db)):
+    try:
+        # Execute a trivial query to confirm DB connectivity
+        await db.execute(text("SELECT 1"))
+        return {"status": "healthy", "database": "connected"}
+    except Exception as e:
+        print(f"HEALTH CHECK FAILURE: {e}")
+        # If the DB is down, return a 503 so K8s knows the pod is failing
+        raise HTTPException(
+            status_code=503, 
+            detail=f"Database connection failed: {str(e)}"
+        )
+
+
+# --------------------------------------------------------------------------
 
 
 @router.post(
