@@ -15,7 +15,6 @@ class DbPost(Base):
     )
     text: Mapped[str] = mapped_column(
         String(256),
-        unique=True,
         nullable=False,
         comment="The post's text.",
     )

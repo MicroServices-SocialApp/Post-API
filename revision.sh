@@ -22,7 +22,7 @@ if [ ! -f "alembic.ini" ]; then
 fi
 
 # Generate the new migration
-echo \n"Going to revision."\n
-alembic revision --autogenerate -m "added column user_id"
+echo "Going to revision."
+alembic revision --autogenerate -m "removed unique=True from text column"
 
 echo -e \n"Database revision complete."\n
